@@ -1,30 +1,131 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>MSFX Sports</title>
-  <style>
-    body { margin:0; font-family: Arial, sans-serif; background:#0B2545; color:white; }
-    header { text-align:center; padding:40px 20px; }
-    button { background:#FF6A00; border:none; padding:10px 15px; color:white; border-radius:8px; cursor:pointer; margin:5px; }
-    .productos { display:grid; grid-template-columns:repeat(auto-fit,minmax(160px,1fr)); gap:15px; padding:20px; }
-    .card { background:white; color:black; border-radius:10px; padding:10px; text-align:center; }
-    .card img { width:100%; border-radius:10px; }
-    select, input { margin:5px; padding:5px; }
-    .carrito { position:fixed; bottom:10px; right:10px; background:white; color:black; padding:10px; border-radius:10px; width:260px; max-height:320px; overflow:auto; }
-    .item { display:flex; justify-content:space-between; font-size:12px; }
-    .total { font-weight:bold; margin-top:10px; }
-    .remove { color:red; cursor:pointer; }
-    .badge { font-size:11px; color:green; }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MSFX Sports</title>
+
+<style>
+body{
+  margin:0;
+  font-family: Arial, sans-serif;
+  background:#000;
+  color:white;
+}
+
+header{
+  text-align:center;
+  padding:50px 20px;
+  background:linear-gradient(180deg,#000,#111);
+}
+
+h1{
+  font-size:36px;
+  letter-spacing:2px;
+}
+
+p{
+  opacity:0.85;
+}
+
+.productos{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
+  gap:20px;
+  padding:20px;
+}
+
+.card{
+  background:#111;
+  border-radius:15px;
+  padding:10px;
+  text-align:center;
+  transition:0.3s;
+  border:1px solid #222;
+}
+
+.card:hover{
+  transform:scale(1.05);
+  border:1px solid #FF6A00;
+}
+
+.card img{
+  width:100%;
+  border-radius:10px;
+}
+
+button{
+  background:#FF6A00;
+  border:none;
+  padding:10px;
+  color:white;
+  border-radius:8px;
+  cursor:pointer;
+  margin-top:5px;
+  width:100%;
+}
+
+select,input{
+  margin:5px;
+  padding:5px;
+  width:80%;
+}
+
+.carrito{
+  position:fixed;
+  bottom:10px;
+  right:10px;
+  background:white;
+  color:black;
+  padding:10px;
+  border-radius:10px;
+  width:260px;
+  max-height:320px;
+  overflow:auto;
+}
+
+.item{
+  font-size:12px;
+  display:flex;
+  justify-content:space-between;
+}
+
+.total{
+  font-weight:bold;
+  margin-top:10px;
+}
+
+.remove{
+  color:red;
+  cursor:pointer;
+}
+
+.badge{
+  font-size:12px;
+  color:green;
+}
+</style>
+
 </head>
+
 <body>
 
 <header>
-  <h1>MSFX Sports</h1>
-  <p>Ropa deportiva que eleva tu rendimiento</p>
-  <p><b>Precios:</b><br>Menudeo: $450<br>Mayoreo (5+ piezas): $430<br>Paquete (corrida exacta): $400 c/u</p>
+  <h1>MSFX SPORTS</h1>
+
+  <p><b>Ropa para rendir más</b></p>
+
+  <p>
+    Venta de ropa y artículos deportivos, incluyendo playeras de fútbol y otras prendas.
+    <br><br>
+    Para más información o pedidos, favor de comunicarse por este medio.
+  </p>
+
+  <p>
+    💰 Menudeo: $450 <br>
+    📦 Mayoreo (5+): $430 <br>
+    🔥 Paquete completo: $400 c/u
+  </p>
 </header>
 
 <section class="productos" id="productos"></section>
@@ -34,6 +135,7 @@
   <div id="lista"></div>
   <div id="mensajePaquete" class="badge"></div>
   <div class="total">Total: $<span id="total">0</span></div>
+
   <button onclick="enviarWhatsApp()">WhatsApp</button>
   <button onclick="irInstagram()">Instagram</button>
 </div>
@@ -51,15 +153,22 @@ function crearProductos(){
     let card = document.createElement('div');
     card.className = 'card';
 
-    let opciones = tallas.map(t=>`<option value="${t}">${t}</option>`).join('');
+    let opciones = tallas.map(t=>`<option>${t}</option>`).join('');
 
     card.innerHTML = `
       <img src="https://via.placeholder.com/300">
       <h3>Producto ${i}</h3>
       <p>$450</p>
-      <select id="talla${i}">${opciones}</select>
+
+      <select id="talla${i}">
+        ${opciones}
+      </select>
+
       <input type="number" id="cant${i}" value="1" min="1">
-      <button onclick="agregar('Producto ${i}',450,'talla${i}','cant${i}')">Agregar</button>
+
+      <button onclick="agregar('Producto ${i}',450,'talla${i}','cant${i}')">
+        Agregar
+      </button>
     `;
 
     cont.appendChild(card);
@@ -68,86 +177,96 @@ function crearProductos(){
 
 function obtenerConteoTallas(){
   let conteo = {S:0,M:0,L:0,XL:0,XXL:0};
+
   carrito.forEach(p=>{
     conteo[p.talla] += p.cantidad;
   });
+
   return conteo;
 }
 
-function esPaqueteExacto(conteo){
+function esPaqueteExacto(c){
   return (
-    conteo.S === 2 &&
-    conteo.M === 3 &&
-    conteo.L === 3 &&
-    conteo.XL === 2 &&
-    conteo.XXL === 2
+    c.S===2 &&
+    c.M===3 &&
+    c.L===3 &&
+    c.XL===2 &&
+    c.XXL===2
   );
 }
 
-function recalcularTodo(){
+function recalcular(){
   let conteo = obtenerConteoTallas();
-  let esPaquete = esPaqueteExacto(conteo);
+  let paquete = esPaqueteExacto(conteo);
+
   total = 0;
 
   carrito.forEach(p=>{
-    let precioFinal = 450;
+    let precio = 450;
 
-    if(esPaquete){
-      precioFinal = 400;
+    if(paquete){
+      precio = 400;
     } else if(p.cantidad >= 5){
-      precioFinal = 430;
+      precio = 430;
     }
 
-    p.precioFinal = precioFinal;
-    p.subtotal = precioFinal * p.cantidad;
+    p.subtotal = precio * p.cantidad;
     total += p.subtotal;
   });
 
-  document.getElementById('mensajePaquete').textContent = esPaquete ? '✔ Paquete completo detectado' : '';
+  document.getElementById('mensajePaquete').textContent =
+    paquete ? "✔ Paquete completo detectado" : "";
 }
 
-function agregar(producto, precio, tallaId, cantId){
+function agregar(nombre,precio,tallaId,cantId){
   let talla = document.getElementById(tallaId).value;
   let cantidad = parseInt(document.getElementById(cantId).value);
 
-  carrito.push({producto, talla, cantidad, precioFinal:precio, subtotal:0});
+  carrito.push({nombre,talla,cantidad,subtotal:0});
 
-  recalcularTodo();
+  recalcular();
   render();
 }
 
 function render(){
   let lista = document.getElementById('lista');
-  lista.innerHTML = '';
+  lista.innerHTML = "";
 
-  carrito.forEach((p,index)=>{
+  carrito.forEach((p,i)=>{
     let div = document.createElement('div');
-    div.className = 'item';
-    div.innerHTML = `${p.producto} (${p.talla}) x${p.cantidad} - $${p.subtotal} <span class="remove" onclick="eliminar(${index})">❌</span>`;
+    div.className = "item";
+
+    div.innerHTML = `
+      ${p.nombre} (${p.talla}) x${p.cantidad} - $${p.subtotal}
+      <span class="remove" onclick="eliminar(${i})">❌</span>
+    `;
+
     lista.appendChild(div);
   });
 
   document.getElementById('total').textContent = total;
 }
 
-function eliminar(index){
-  carrito.splice(index,1);
-  recalcularTodo();
+function eliminar(i){
+  carrito.splice(i,1);
+  recalcular();
   render();
 }
 
 function enviarWhatsApp(){
-  let mensaje = 'Hola, quiero pedir:%0A';
-  carrito.forEach(p=>{
-    mensaje += `- ${p.producto} (${p.talla}) x${p.cantidad} = $${p.subtotal}%0A`;
-  });
-  mensaje += `Total: $${total}`;
+  let msg = "Hola, quiero pedir:%0A";
 
-  window.open('https://wa.me/521XXXXXXXXXX?text=' + mensaje);
+  carrito.forEach(p=>{
+    msg += `- ${p.nombre} (${p.talla}) x${p.cantidad} = $${p.subtotal}%0A`;
+  });
+
+  msg += `Total: $${total}`;
+
+  window.open("https://wa.me/521XXXXXXXXXX?text="+msg);
 }
 
 function irInstagram(){
-  window.open('https://instagram.com/TUUSUARIO');
+  window.open("https://instagram.com/TUUSUARIO");
 }
 
 crearProductos();
