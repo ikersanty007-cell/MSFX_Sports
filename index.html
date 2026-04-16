@@ -13,21 +13,27 @@ body{
   color:white;
 }
 
-header{
+/* 🔥 Banner */
+.banner{
   text-align:center;
-  padding:50px 20px;
+  padding:40px 20px;
   background:linear-gradient(180deg,#000,#111);
 }
 
-h1{
-  font-size:36px;
+.banner img{
+  width:120px;
+  margin-bottom:10px;
+}
+
+.banner h1{
   letter-spacing:2px;
 }
 
-p{
-  opacity:0.85;
+.banner p{
+  opacity:0.8;
 }
 
+/* 🛒 Productos */
 .productos{
   display:grid;
   grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
@@ -71,6 +77,7 @@ select,input{
   width:80%;
 }
 
+/* 🛒 Carrito */
 .carrito{
   position:fixed;
   bottom:10px;
@@ -104,16 +111,29 @@ select,input{
   font-size:12px;
   color:green;
 }
+
+/* 📱 Botón flotante */
+.whatsapp-float{
+  position:fixed;
+  bottom:80px;
+  right:15px;
+  background:#25D366;
+  color:white;
+  padding:12px 15px;
+  border-radius:50%;
+  font-size:20px;
+  text-decoration:none;
+}
 </style>
 
 </head>
 
 <body>
 
-<header>
+<!-- 🔥 Banner -->
+<div class="banner">
+  <img src="https://raw.githubusercontent.com/ikersanty007-cell/MSFX_Sports/main/IMG_20260317_204306_668.webp">
   <h1>MSFX SPORTS</h1>
-
-  <p><b>Ropa para rendir más</b></p>
 
   <p>
     Venta de ropa y artículos deportivos, incluyendo playeras de fútbol y otras prendas.
@@ -123,10 +143,10 @@ select,input{
 
   <p>
     💰 Menudeo: $450 <br>
-    📦 Mayoreo (5+): $430 <br>
-    🔥 Paquete completo: $400 c/u
+    📦 Mayoreo (5+ piezas): $430 <br>
+    🔥 Paquete: 2S, 3M, 3L, 2XL, 2XXL ($400 c/u)
   </p>
-</header>
+</div>
 
 <section class="productos" id="productos"></section>
 
@@ -139,6 +159,9 @@ select,input{
   <button onclick="enviarWhatsApp()">WhatsApp</button>
   <button onclick="irInstagram()">Instagram</button>
 </div>
+
+<!-- 📱 Botón flotante -->
+<a class="whatsapp-float" href="https://wa.me/521XXXXXXXXXX">💬</a>
 
 <script>
 let carrito = [];
