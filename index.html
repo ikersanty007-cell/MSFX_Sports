@@ -24,11 +24,12 @@ select,input{margin:5px;padding:5px;width:80%;}
 .total{font-weight:bold;margin-top:10px;}
 .remove{color:red;cursor:pointer;}
 .badge{font-size:12px;color:green;}
+#infoPiezas{font-size:12px;margin-top:5px;color:#333;}
 
 /* Botones flotantes */
 .float-btn{position:fixed;right:15px;width:50px;height:50px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:white;font-size:22px;text-decoration:none;}
-.whatsapp{bottom:80px;background:#25D366;}
-.instagram{bottom:20px;background:#E1306C;}
+.whatsapp{bottom:140px;background:#25D366;}
+.instagram{bottom:80px;background:#E1306C;}
 </style>
 </head>
 
@@ -41,7 +42,7 @@ select,input{margin:5px;padding:5px;width:80%;}
   <p>
     Venta de ropa y artículos deportivos, incluyendo playeras de fútbol y otras prendas.
     <br><br>
-    Para más información o pedidos, favor de comunicarse por este medio.
+    Para más información o pedidos, favor de comunicarse por WhatsApp o Instagram.
   </p>
 
   <p>
@@ -56,12 +57,15 @@ select,input{margin:5px;padding:5px;width:80%;}
 <div class="carrito">
   <h4>Carrito</h4>
   <div id="lista"></div>
+
+  <!-- 🔥 NUEVO -->
+  <div id="infoPiezas"></div>
+
   <div id="mensajePaquete" class="badge"></div>
   <div class="total">Total: $<span id="total">0</span></div>
 </div>
 
-<!-- Botones flotantes -->
-<a class="float-btn whatsapp" href="https://wa.me/521XXXXXXXXXX">💬</a>
+<a class="float-btn whatsapp" href="#" onclick="enviarWhatsApp()">💬</a>
 <a class="float-btn instagram" href="https://instagram.com/msfx_sports">📸</a>
 
 <script>
@@ -91,6 +95,10 @@ function crearProductos(){
   }
 }
 
+function totalPiezas(){
+  return carrito.reduce((acc,p)=>acc+p.cantidad,0);
+}
+
 function obtenerConteoTallas(){
   let conteo = {S:0,M:0,L:0,XL:0,XXL:0};
   carrito.forEach(p=>{conteo[p.talla]+=p.cantidad;});
@@ -101,9 +109,25 @@ function esPaqueteExacto(c){
   return (c.S===2 && c.M===3 && c.L===3 && c.XL===2 && c.XXL===2);
 }
 
+function actualizarInfo(){
+  let piezas = totalPiezas();
+  let texto = "";
+
+  if(piezas === 0){
+    texto = "";
+  } else if(piezas < 5){
+    texto = `🧾 Piezas: ${piezas} | 💡 Te faltan ${5 - piezas} para mayoreo`;
+  } else {
+    texto = `🧾 Piezas: ${piezas} | 🔥 Mayoreo activado`;
+  }
+
+  document.getElementById('infoPiezas').textContent = texto;
+}
+
 function recalcular(){
   let conteo = obtenerConteoTallas();
   let paquete = esPaqueteExacto(conteo);
+  let piezas = totalPiezas();
 
   total = 0;
 
@@ -112,7 +136,7 @@ function recalcular(){
 
     if(paquete){
       precio = 400;
-    } else if(p.cantidad >= 5){
+    } else if(piezas >= 5){
       precio = 430;
     }
 
@@ -120,7 +144,10 @@ function recalcular(){
     total += p.subtotal;
   });
 
-  document.getElementById('mensajePaquete').textContent = paquete ? "✔ Paquete completo detectado" : "";
+  document.getElementById('mensajePaquete').textContent =
+    paquete ? "✔ Paquete completo detectado" : "";
+
+  actualizarInfo(); // 🔥 CLAVE
 }
 
 function agregar(nombre,tallaId,cantId){
@@ -140,7 +167,12 @@ function render(){
   carrito.forEach((p,i)=>{
     let div = document.createElement('div');
     div.className = "item";
-    div.innerHTML = `${p.nombre} (${p.talla}) x${p.cantidad} - $${p.subtotal} <span class="remove" onclick="eliminar(${i})">❌</span>`;
+
+    div.innerHTML = `
+      ${p.nombre} (${p.talla}) x${p.cantidad} - $${p.subtotal}
+      <span class="remove" onclick="eliminar(${i})">❌</span>
+    `;
+
     lista.appendChild(div);
   });
 
@@ -151,6 +183,23 @@ function eliminar(i){
   carrito.splice(i,1);
   recalcular();
   render();
+}
+
+function enviarWhatsApp(){
+  if(carrito.length===0){
+    alert("Agrega productos primero");
+    return;
+  }
+
+  let msg = "Hola, quiero pedir:%0A";
+
+  carrito.forEach(p=>{
+    msg += `- ${p.nombre} (${p.talla}) x${p.cantidad} = $${p.subtotal}%0A`;
+  });
+
+  msg += `Total: $${total}`;
+
+  window.open("https://wa.me/521XXXXXXXXXX?text="+msg);
 }
 
 crearProductos();
