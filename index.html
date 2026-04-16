@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MSFX Sports</title>
+  <style>
+    body { margin:0; font-family: Arial, sans-serif; background:#0B2545; color:white; }
+    header { text-align:center; padding:40px 20px; }
+    button { background:#FF6A00; border:none; padding:10px 15px; color:white; border-radius:8px; cursor:pointer; margin:5px; }
+    .productos { display:grid; grid-template-columns:repeat(auto-fit,minmax(160px,1fr)); gap:15px; padding:20px; }
+    .card { background:white; color:black; border-radius:10px; padding:10px; text-align:center; }
+    .card img { width:100%; border-radius:10px; }
+    select, input { margin:5px; padding:5px; }
+    .carrito { position:fixed; bottom:10px; right:10px; background:white; color:black; padding:10px; border-radius:10px; width:260px; max-height:320px; overflow:auto; }
+    .item { display:flex; justify-content:space-between; font-size:12px; }
+    .total { font-weight:bold; margin-top:10px; }
+    .remove { color:red; cursor:pointer; }
+    .badge { font-size:11px; color:green; }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>MSFX Sports</h1>
+  <p>Ropa deportiva que eleva tu rendimiento</p>
+  <p><b>Precios:</b><br>Menudeo: $450<br>Mayoreo (5+ piezas): $430<br>Paquete (corrida exacta): $400 c/u</p>
+</header>
+
+<section class="productos" id="productos"></section>
+
+<div class="carrito">
+  <h4>Carrito</h4>
+  <div id="lista"></div>
+  <div id="mensajePaquete" class="badge"></div>
+  <div class="total">Total: $<span id="total">0</span></div>
+  <button onclick="enviarWhatsApp()">WhatsApp</button>
+  <button onclick="irInstagram()">Instagram</button>
+</div>
+
+<script>
+let carrito = [];
+let total = 0;
+
+const tallas = ['S','M','L','XL','XXL'];
+
+function crearProductos(){
+  let cont = document.getElementById('productos');
+
+  for(let i=1;i<=55;i++){
+    let card = document.createElement('div');
+    card.className = 'card';
+
+    let opciones = tallas.map(t=>`<option value="${t}">${t}</option>`).join('');
+
+    card.innerHTML = `
+      <img src="https://via.placeholder.com/300">
+      <h3>Producto ${i}</h3>
+      <p>$450</p>
+      <select id="talla${i}">${opciones}</select>
+      <input type="number" id="cant${i}" value="1" min="1">
+      <button onclick="agregar('Producto ${i}',450,'talla${i}','cant${i}')">Agregar</button>
+    `;
+
+    cont.appendChild(card);
+  }
+}
+
+function obtenerConteoTallas(){
+  let conteo = {S:0,M:0,L:0,XL:0,XXL:0};
+  carrito.forEach(p=>{
+    conteo[p.talla] += p.cantidad;
+  });
+  return conteo;
+}
+
+function esPaqueteExacto(conteo){
+  return (
+    conteo.S === 2 &&
+    conteo.M === 3 &&
+    conteo.L === 3 &&
+    conteo.XL === 2 &&
+    conteo.XXL === 2
+  );
+}
+
+function recalcularTodo(){
+  let conteo = obtenerConteoTallas();
+  let esPaquete = esPaqueteExacto(conteo);
+  total = 0;
+
+  carrito.forEach(p=>{
+    let precioFinal = 450;
+
+    if(esPaquete){
+      precioFinal = 400;
+    } else if(p.cantidad >= 5){
+      precioFinal = 430;
+    }
+
+    p.precioFinal = precioFinal;
+    p.subtotal = precioFinal * p.cantidad;
+    total += p.subtotal;
+  });
+
+  document.getElementById('mensajePaquete').textContent = esPaquete ? '✔ Paquete completo detectado' : '';
+}
+
+function agregar(producto, precio, tallaId, cantId){
+  let talla = document.getElementById(tallaId).value;
+  let cantidad = parseInt(document.getElementById(cantId).value);
+
+  carrito.push({producto, talla, cantidad, precioFinal:precio, subtotal:0});
+
+  recalcularTodo();
+  render();
+}
+
+function render(){
+  let lista = document.getElementById('lista');
+  lista.innerHTML = '';
+
+  carrito.forEach((p,index)=>{
+    let div = document.createElement('div');
+    div.className = 'item';
+    div.innerHTML = `${p.producto} (${p.talla}) x${p.cantidad} - $${p.subtotal} <span class="remove" onclick="eliminar(${index})">❌</span>`;
+    lista.appendChild(div);
+  });
+
+  document.getElementById('total').textContent = total;
+}
+
+function eliminar(index){
+  carrito.splice(index,1);
+  recalcularTodo();
+  render();
+}
+
+function enviarWhatsApp(){
+  let mensaje = 'Hola, quiero pedir:%0A';
+  carrito.forEach(p=>{
+    mensaje += `- ${p.producto} (${p.talla}) x${p.cantidad} = $${p.subtotal}%0A`;
+  });
+  mensaje += `Total: $${total}`;
+
+  window.open('https://wa.me/521XXXXXXXXXX?text=' + mensaje);
+}
+
+function irInstagram(){
+  window.open('https://instagram.com/TUUSUARIO');
+}
+
+crearProductos();
+</script>
+
+</body>
+</html>
