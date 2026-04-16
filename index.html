@@ -6,131 +6,34 @@
 <title>MSFX Sports</title>
 
 <style>
-body{
-  margin:0;
-  font-family: Arial, sans-serif;
-  background:#000;
-  color:white;
-}
+body{margin:0;font-family:Arial;background:#000;color:white;}
 
-/* 🔥 Banner */
-.banner{
-  text-align:center;
-  padding:40px 20px;
-  background:linear-gradient(180deg,#000,#111);
-}
+.banner{text-align:center;padding:40px 20px;background:linear-gradient(180deg,#000,#111);}
+.banner img{width:120px;margin-bottom:10px;}
 
-.banner img{
-  width:120px;
-  margin-bottom:10px;
-}
+.productos{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:20px;padding:20px;}
+.card{background:#111;border-radius:15px;padding:10px;text-align:center;transition:0.3s;border:1px solid #222;}
+.card:hover{transform:scale(1.05);border:1px solid #FF6A00;}
+.card img{width:100%;border-radius:10px;}
 
-.banner h1{
-  letter-spacing:2px;
-}
+button{background:#FF6A00;border:none;padding:10px;color:white;border-radius:8px;cursor:pointer;margin-top:5px;width:100%;}
+select,input{margin:5px;padding:5px;width:80%;}
 
-.banner p{
-  opacity:0.8;
-}
+.carrito{position:fixed;bottom:10px;right:10px;background:white;color:black;padding:10px;border-radius:10px;width:260px;max-height:320px;overflow:auto;}
+.item{font-size:12px;display:flex;justify-content:space-between;}
+.total{font-weight:bold;margin-top:10px;}
+.remove{color:red;cursor:pointer;}
+.badge{font-size:12px;color:green;}
 
-/* 🛒 Productos */
-.productos{
-  display:grid;
-  grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
-  gap:20px;
-  padding:20px;
-}
-
-.card{
-  background:#111;
-  border-radius:15px;
-  padding:10px;
-  text-align:center;
-  transition:0.3s;
-  border:1px solid #222;
-}
-
-.card:hover{
-  transform:scale(1.05);
-  border:1px solid #FF6A00;
-}
-
-.card img{
-  width:100%;
-  border-radius:10px;
-}
-
-button{
-  background:#FF6A00;
-  border:none;
-  padding:10px;
-  color:white;
-  border-radius:8px;
-  cursor:pointer;
-  margin-top:5px;
-  width:100%;
-}
-
-select,input{
-  margin:5px;
-  padding:5px;
-  width:80%;
-}
-
-/* 🛒 Carrito */
-.carrito{
-  position:fixed;
-  bottom:10px;
-  right:10px;
-  background:white;
-  color:black;
-  padding:10px;
-  border-radius:10px;
-  width:260px;
-  max-height:320px;
-  overflow:auto;
-}
-
-.item{
-  font-size:12px;
-  display:flex;
-  justify-content:space-between;
-}
-
-.total{
-  font-weight:bold;
-  margin-top:10px;
-}
-
-.remove{
-  color:red;
-  cursor:pointer;
-}
-
-.badge{
-  font-size:12px;
-  color:green;
-}
-
-/* 📱 Botón flotante */
-.whatsapp-float{
-  position:fixed;
-  bottom:80px;
-  right:15px;
-  background:#25D366;
-  color:white;
-  padding:12px 15px;
-  border-radius:50%;
-  font-size:20px;
-  text-decoration:none;
-}
+/* Botones flotantes */
+.float-btn{position:fixed;right:15px;width:50px;height:50px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:white;font-size:22px;text-decoration:none;}
+.whatsapp{bottom:80px;background:#25D366;}
+.instagram{bottom:20px;background:#E1306C;}
 </style>
-
 </head>
 
 <body>
 
-<!-- 🔥 Banner -->
 <div class="banner">
   <img src="https://raw.githubusercontent.com/ikersanty007-cell/MSFX_Sports/main/IMG_20260317_204306_668.webp">
   <h1>MSFX SPORTS</h1>
@@ -155,13 +58,11 @@ select,input{
   <div id="lista"></div>
   <div id="mensajePaquete" class="badge"></div>
   <div class="total">Total: $<span id="total">0</span></div>
-
-  <button onclick="enviarWhatsApp()">WhatsApp</button>
-  <button onclick="irInstagram()">Instagram</button>
 </div>
 
-<!-- 📱 Botón flotante -->
-<a class="whatsapp-float" href="https://wa.me/521XXXXXXXXXX">💬</a>
+<!-- Botones flotantes -->
+<a class="float-btn whatsapp" href="https://wa.me/521XXXXXXXXXX">💬</a>
+<a class="float-btn instagram" href="https://instagram.com/msfx_sports">📸</a>
 
 <script>
 let carrito = [];
@@ -171,7 +72,6 @@ const tallas = ['S','M','L','XL','XXL'];
 
 function crearProductos(){
   let cont = document.getElementById('productos');
-
   for(let i=1;i<=55;i++){
     let card = document.createElement('div');
     card.className = 'card';
@@ -182,16 +82,9 @@ function crearProductos(){
       <img src="https://via.placeholder.com/300">
       <h3>Producto ${i}</h3>
       <p>$450</p>
-
-      <select id="talla${i}">
-        ${opciones}
-      </select>
-
+      <select id="talla${i}">${opciones}</select>
       <input type="number" id="cant${i}" value="1" min="1">
-
-      <button onclick="agregar('Producto ${i}',450,'talla${i}','cant${i}')">
-        Agregar
-      </button>
+      <button onclick="agregar('Producto ${i}','talla${i}','cant${i}')">Agregar</button>
     `;
 
     cont.appendChild(card);
@@ -200,22 +93,12 @@ function crearProductos(){
 
 function obtenerConteoTallas(){
   let conteo = {S:0,M:0,L:0,XL:0,XXL:0};
-
-  carrito.forEach(p=>{
-    conteo[p.talla] += p.cantidad;
-  });
-
+  carrito.forEach(p=>{conteo[p.talla]+=p.cantidad;});
   return conteo;
 }
 
 function esPaqueteExacto(c){
-  return (
-    c.S===2 &&
-    c.M===3 &&
-    c.L===3 &&
-    c.XL===2 &&
-    c.XXL===2
-  );
+  return (c.S===2 && c.M===3 && c.L===3 && c.XL===2 && c.XXL===2);
 }
 
 function recalcular(){
@@ -237,11 +120,10 @@ function recalcular(){
     total += p.subtotal;
   });
 
-  document.getElementById('mensajePaquete').textContent =
-    paquete ? "✔ Paquete completo detectado" : "";
+  document.getElementById('mensajePaquete').textContent = paquete ? "✔ Paquete completo detectado" : "";
 }
 
-function agregar(nombre,precio,tallaId,cantId){
+function agregar(nombre,tallaId,cantId){
   let talla = document.getElementById(tallaId).value;
   let cantidad = parseInt(document.getElementById(cantId).value);
 
@@ -258,12 +140,7 @@ function render(){
   carrito.forEach((p,i)=>{
     let div = document.createElement('div');
     div.className = "item";
-
-    div.innerHTML = `
-      ${p.nombre} (${p.talla}) x${p.cantidad} - $${p.subtotal}
-      <span class="remove" onclick="eliminar(${i})">❌</span>
-    `;
-
+    div.innerHTML = `${p.nombre} (${p.talla}) x${p.cantidad} - $${p.subtotal} <span class="remove" onclick="eliminar(${i})">❌</span>`;
     lista.appendChild(div);
   });
 
@@ -274,22 +151,6 @@ function eliminar(i){
   carrito.splice(i,1);
   recalcular();
   render();
-}
-
-function enviarWhatsApp(){
-  let msg = "Hola, quiero pedir:%0A";
-
-  carrito.forEach(p=>{
-    msg += `- ${p.nombre} (${p.talla}) x${p.cantidad} = $${p.subtotal}%0A`;
-  });
-
-  msg += `Total: $${total}`;
-
-  window.open("https://wa.me/521XXXXXXXXXX?text="+msg);
-}
-
-function irInstagram(){
-  window.open("https://instagram.com/TUUSUARIO");
 }
 
 crearProductos();
